@@ -46,11 +46,10 @@ envir_tbl <- data.frame(variable = names(envir_mean),
                         mean = round(envir_mean, 2),
                         std = envir_std, row.names = NULL)
 
-envir_tbl$mean_std <- paste(envir_tbl$mean, "±", envir_tbl$std)
-
 # Writing summary table
 if (!dir.exists("output/")) dir.create("output/", recursive = TRUE)
-write.csv(envir_tbl, "output/02_envir_summary.csv")
+write.csv(envir_tbl,
+          "output/02_envir_summary.csv", row.names = FALSE)
 
 # Output 2: figure -------------------------------------------------------------
 
@@ -80,6 +79,10 @@ png("figs/02_species_abundance.png",
     width = 1.5 * fig_size)
 plot(sort(comm_sum, decreasing = TRUE), las = 1, bty = "l",
      xlab = "Species", ylab = "Abundance")
+text(substitute(paste(italic("Bolboschoenus maritimus"))), x = 14, y = 126,
+     cex = 0.8)
+text(substitute(paste(italic("Phalaris coerulescens"))), x = 14, y = 80,
+     cex = 0.8)
 dev.off()
 
 # for loop in R ----------------------------------------------------------------
