@@ -35,7 +35,7 @@ library("rnaturalearthhires")
 
 
 
-# DEALING WITH .sf FILES ==========================================
+# EXAMINING A sf OBJECT ========================================================
 # World eh um data.frame do tipo "sf"
 # cujo geometry type eh do tipo MULTIPOLYGON
 data(World)
@@ -44,7 +44,7 @@ data(World)
 tm_shape(World) +
   tm_borders()
 
-# evaluating .sf data properties
+## THE GEOMETRY "COLUMN" AND GEOMETRIES AS OBJECTS =============================
 head(World[1:2,1:4])
 names(World)
 class(World)
@@ -93,14 +93,14 @@ World %>%
 # baseadas no valor de outras
 World %>%
   dplyr::mutate(our_countries = if_else(iso_a3 %in% c("COL","BRA", "MEX"),
-                                 "red",
-                                 "grey")) %>%
+                                        "red",
+                                        "grey")) %>%
   tmap::tm_shape() +
   tmap::tm_borders() +
   tmap::tm_fill(col = "our_countries") +
   tmap::tm_add_legend("fill",
-                "Countries",
-                col = "red")
+                      "Countries",
+                      col = "red")
 
 
 
@@ -155,8 +155,7 @@ dir.create(path = "data/raster", recursive = TRUE)
 tmax_data <- raster::getData(name = "worldclim",
                              var = "tmax",
                              res = 10,
-                             path = "data/raster/",
-                             int64_as_string = FALSE)
+                             path = "data/raster/")
 plot(tmax_data[[3]])
 
 # evaluating raster data properties
