@@ -10,19 +10,29 @@ library(tidyverse)
 library(reshape2)
 
 
-# Reading the data in R ----
+# Reading the data in R ========================================================
 
-# The files are all in .csv format, separated by commas. So let's use the `read.csv()` function. We could also use `read.table()` with the arguments `sep = ","` and `header = TRUE`
-# So let's read the five sets of data. A very useful function for reading data is the `list.files()` from the **base** package. This function lists files in a directory, based on a pattern.
+# The files are all in .csv format, separated by commas.
+# So let's use the `read.csv()` function.
+# We could also use `read.table()` with
+# the arguments `sep = ","` and `header = TRUE`
+# So let's read the five sets of data.
+# A very useful function for reading data
+# is the `list.files()` from the **base** package.
+# This function lists files in a directory, based on a pattern.
 
-# We will apply the function to list all files in the directory `data` with the extension `.csv`.
+# We will apply the function to list all files
+# in the directory `data` with the extension `.csv`.
 files_path <- list.files(path = "data/raw/cestes",
                          pattern = ".csv",
                          full.names = TRUE)
 
 files_path
 
-# The `files_path` object is a vector of five elements (after all, there are five files) containing the full name of the file. Let's use the contents of this vector in the `read.csv()` function. We will use the a loop to read all data at once.
+# The `files_path` object is a vector of five elements
+# (after all, there are five files) containing the full name of the file.
+# Let's use the contents of this vector in the `read.csv()` function.
+# We will use the a loop to read all data at once.
 # Ela soh renomeou o nome das tabelas com o nome dos arquivos originais,
 # soh que sem a string ".csv"
 file_names <- gsub(".csv", "", basename(files_path), fixed = TRUE)
@@ -32,7 +42,10 @@ for (i in 1:length(files_path)) {
 }
 
 
-# Let's apply the `head()`, `dim()` and `summary()` functions to inspect all files. Try to understand based on the output and the help page (e.g.: `?head`) what each of the functions returns.
+# Let's apply the `head()`, `dim()` and `summary()` functions
+# to inspect all files.
+# Try to understand based on the output and
+# the help page (e.g.: `?head`) what each of the functions returns.
 
 # Understanding the object `comm`
 head(comm)
@@ -50,7 +63,6 @@ dim(envir)
 summary(envir)
 
 # Understanding the object `splist`
-head(splist)
 dim(splist)
 summary(splist)
 
@@ -61,10 +73,12 @@ summary(traits)
 
 # Data summary
 
-# How many species in the dataset? We can simply count the number of rows in `splist`.
+# How many species in the dataset?
+# We can simply count the number of rows in `splist`
 nrow(splist)
 
-# How many areas sampled? We can count the number of lines of `comm` or `envir` objects.
+# How many areas sampled?
+# We can count the number of lines of `comm` or `envir` objects.
 nrow(comm)
 nrow(envir)
 
@@ -74,17 +88,29 @@ names(envir)[-1]
 # counting the variables
 length(names(envir)[-1])
 
-# Joining different tables through common identifiers ----
+# Joining different tables through common identifiers ==========================
 
-# Let's use the `merge()` function from the __base__ package to add the coordinate column to the object containing the environmental variables. This function will combine two worksheets through a common identifier, which is the primary key. In the case of the `envir` object, the primary key is the `Sites` column that contains the number of the sampled locations. We can call this column using the `$` operator.
+# Let's use the `merge()` function from the __base__ package
+# to add the coordinate column
+# to the object containing the environmental variables.
+# This function will combine two worksheets through a common identifier,
+# which is the primary key.
+# In the case of the `envir` object, the primary key
+# is the `Sites` column that contains the number of the sampled locations.
+# We can call this column using the `$` operator.
 envir$Sites
 
-# There are 97 areas. Let's see what happens when we use the `summary()` function.
+# There are 97 areas.
+# Let's see what happens when we use the `summary()` function.
 summary(envir$Sites)
 
 # Transforming variable types
-
-# In R, the `Sites` column that represents a categorical variable with the id of each area is being understood as a numeric variable. Let's convert this column to a factor, this way it will better represent the meaning of the variable which is simply the id of each area. For this we use the `factor()` function
+# In R, the `Sites` column that represents a categorical variable
+# with the id of each area is being understood as a numeric variable.
+# Let's convert this column to a factor,
+# this way it will better represent the meaning of the variable
+# which is simply the id of each area.
+# For this we use the `factor()` function
 
 # if we get the class of this vector, we will see that it is numeric
 class(envir$Sites)
@@ -96,16 +122,21 @@ envir$Sites <- as.factor(envir$Sites)
 # Let's do the same for the `Sites` variable of the `coord` object.
 coord$Sites <- as.factor(coord$Sites)
 
+
 # Joining `coord` and `envir`
 
 # Let's then apply the `merge` function.
-# Comportamento do "Inner join"
-
+# (mesmo comportamento do "Inner join")
+# Perceba que ambos os data.frames possuem o mesmo nome de coluna
+# com as mesmas informacoes
+coord$Sites
 envir_coord <- merge(x = envir,
                      y = coord,
                      by = "Sites")
 
-# We can check the join with the `dim()` and `head()` functions. How many columns should we have at the end? What columns were added?
+# We can check the join with the `dim()` and `head()` functions.
+# How many columns should we have at the end?
+# What columns were added?
 dim(envir)
 dim(coord)
 dim(envir_coord)
@@ -130,40 +161,76 @@ n_sp <- nrow(splist)
 n_sp
 
 # creating table with each species in each area species in rows
-comm_df <- tidyr::pivot_longer(comm, cols = 2:ncol(comm), names_to = "TaxCode", values_to = "Abundance")
+comm_df <- tidyr::pivot_longer(comm,
+                               cols = 2:ncol(comm),
+                               names_to = "TaxCode",
+                               values_to = "Abundance")
 
+# testing to understand pivot_longer:
+# "names_to" will be the name of the first new column in comm_df
+# that is filled with the data from the COLUMN NAMES selected in cols
+# "values_to" will be the name of the second new column in comm_df
+# that is filled with the data from the COLUMN VALUES selected in cols
+ola <- data.frame(competitor = c("Guy1", "Guy2", "Guy3"),
+                  age = c(17, 19, 22),
+                  dayOne = c(14, 10, 14),
+                  dayTwo = c(15, 5, 10))
+newOla <- tidyr::pivot_longer(ola,
+                              cols = 3:ncol(ola),
+                              names_to = "day",
+                              values_to = "numPoints")
+ola[,1:ncol(comm)]
+head(comm_df)
+
+3:ncol(comm)
 # Let's check the object's header and dimensions.
 dim(comm_df)
 head(comm_df)
 
 # Adding all variables to `comm_df`
 
-# Finally, let's add `splist`, `traits` and `envir_coord` to the `comm_df` worksheet.
+# Finally, let's add `splist`, `traits` and `envir_coord`
+# to the `comm_df` worksheet.
 
-# As we saw in the class, the relationships between two tables are always made pairwise. So, let's merge the tables together using the `merge()` function.
+# As we saw in the class,
+# the relationships between two tables are always made pairwise.
+# So, let's merge the tables together using the `merge()` function.
 
 # Table `comm_df` and `splist`
 
-# First, let's add the species information contained in `splist` to `comm_df` using the `TaxCode` column.
-comm_sp <- merge(comm_df, splist, by = "TaxCode")
+# First, let's add the species information contained in `splist`
+# to `comm_df` using the `TaxCode` column.
+comm_sp <- merge(comm_df,
+                 splist,
+                 by = "TaxCode")
 head(comm_sp)
 # same as: dplyr::left_join(comm_df, splist, by = "TaxCode)
 
 # Table `comm_sp` and `traits`
 
-# Second, we added the species attribute data to the community table. In the `traits` table, the column that identifies the species is called `Sp`. Before doing the join, we need to change the name to match the name of the column in `comm_sp` which is `TaxCode`.
+# Second, we added the species attribute data to the community table.
+# In the `traits` table, the column that identifies the species is called `Sp`.
+# Before doing the join, we need to change the name
+# to match the name of the column in `comm_sp` which is `TaxCode`.
 names(traits)
 # renaming the first element
 colnames(traits)[1] <- "TaxCode"
 
-comm_traits <- merge(comm_sp, traits, by = "TaxCode")
+comm_traits <- merge(comm_sp,
+                     traits,
+                     by = "TaxCode")
 head(comm_traits)
 
 # Table `comm_traits` and `envir_coord`
 
-# We are almost in the end, we will now bind the environmental data (already containing the coordinates) to the community table using the column `Sites`.
+# We are almost in the end,
+# we will now bind the environmental data
+# (already containing the coordinates)
+# to the community table using the column `Sites`.
 
-comm_total <- merge(comm_traits, envir_coord, by = "Sites")
+comm_total <- merge(comm_traits,
+                    envir_coord,
+                    by = "Sites")
 head(comm_total)
 
 # Finally, we end our script writing the modified table. We will use the function `write.csv()`.
@@ -175,6 +242,8 @@ write.csv(x = comm_total,
           row.names = FALSE)
 
 # Extra: filter ----------------------------------------------------------------
-sp1 <- filter(comm_total, TaxCode == "sp1", Elev > 3)
+sp1 <- filter(comm_total,
+              TaxCode == "sp1",
+              Elev > 3)
 
 View(sp1)

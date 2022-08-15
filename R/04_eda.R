@@ -14,20 +14,32 @@ summary(iris)
 
 ## The functions `aggregate` and `tapply` --------------------------------------
 
+# table() produces a table with the frequencies
+# of each possible value in the vector
 table(iris$Species)
 
 # sepal length mean per species
-tapply(X = iris$Sepal.Length, INDEX = list(iris$Species), FUN = mean)
+# a utilidade de tapply eh que podemos agrupar diferentes observacoes
+# de acordo com o valor de uma variavel especifica,
+# e podemos executar a funcao tendo como input
+# APENAS os dados de cada grupo
+tapply(X = iris$Sepal.Length,
+       INDEX = list(iris$Species),
+       FUN = mean)
 # the same operation, using another function, other arguments and other output
-aggregate(x = iris$Sepal.Length, by = list(iris$Species), FUN = mean)
+aggregate(x = iris$Sepal.Length,
+          by = list(iris$Species),
+          FUN = mean)
 # still the same operation, the same function but a different notation
 aggregate(Sepal.Length ~ Species, data = iris, mean)
 
 
 ## NAs and zeroes --------------------------------------------------------------
+# checking the presence of NAs for each column
 apply(iris, 2, function(x) sum(is.na(x)))
 
 ## Descriptive statistics ------------------------------------------------------
+# "vars" contains only the columns that include numerical data
 vars <- iris[, -5]
 
 ### Measures of central tendency
@@ -35,6 +47,7 @@ apply(vars, 2, mean)
 
 apply(vars, 2, median)
 
+# highest value for a specific variable
 freq_sl <- sort(table(iris$Sepal.Length), decreasing = TRUE)
 freq_sl[1]
 
@@ -80,7 +93,9 @@ cor(vars)
 # Graphical methods ------------------------------------------------------------
 barplot(table(iris$Species))
 
-
+# par() reinitiates the "graph" buffer from Rstudio
+# and determines the quantity and spatial disposition
+# of images combining more than one graph
 par(mfrow = c(2, 2))
 hist(iris$Sepal.Length)
 hist(iris$Sepal.Width)
